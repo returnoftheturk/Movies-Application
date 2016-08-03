@@ -1,15 +1,24 @@
 package com.example.akgul.movies_application;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,25 +40,16 @@ public class MainActivityFragment extends Fragment {
         //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
         View rootView = inflater.inflate(R. layout.fragment_main, container, false);
 
-//        Integer[] mThumbIds = { R.drawable.sample_0, R.drawable.sample_7,
-//                R.drawable.sample_1, R.drawable.sample_4,
-//                R.drawable.sample_2, R.drawable.sample_6,
-//                R.drawable.sample_3, R.drawable.sample_1,
-//                R.drawable.sample_4, R.drawable.sample_0,
-//                R.drawable.sample_5, R.drawable.sample_3,
-//                R.drawable.sample_6, R.drawable.sample_5,
-//                R.drawable.sample_7, R.drawable.sample_2,
-//        };
-//        ArrayAdapter<Integer> myAdapter = new ArrayAdapter<>(getActivity(), R.layout.movie_item_poster,
-//                R.id.poster_item_imageview, mThumbIds);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_poster);
         gridView.setAdapter(new ImageAdapter(getActivity()));
 
+        new FetchMovieTask().execute();
+
         return rootView;
     }
 
-    public class ImageAdapter extends BaseAdapter{
+    public class ImageAdapter extends BaseAdapter {
         private Context mContext;
 
         public ImageAdapter(Context c){
@@ -96,5 +96,65 @@ public class MainActivityFragment extends Fragment {
         };
 
 
+    }
+
+    public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
+        private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String moviesJsonStr = null;
+            try{
+                URL url = new URL("https://api.themoviedb.org/3/movie/550?api_key=891863ba3b17302582171ead3487b06c");
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+
+                if (inputStream==null)
+                    return null;
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length()==0){
+                    return null;
+                }
+                moviesJsonStr = buffer.toString();
+
+            }
+            catch (IOException e){
+                Log.v(LOG_TAG, "Error: ", e);
+                return null;
+            }
+            finally {
+                if (urlConnection != null){
+                    urlConnection.disconnect();
+                }
+                if (reader!=null){
+                    try{
+                        reader.close();
+                    }
+                    catch(final IOException e){
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 }
