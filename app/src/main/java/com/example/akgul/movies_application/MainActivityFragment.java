@@ -7,11 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +34,7 @@ import java.net.URL;
  */
 public class MainActivityFragment extends Fragment {
     public String[] resultStr;
+    public ImageAdapter mImageAdapter;
 
     public MainActivityFragment() {
     }
@@ -36,6 +42,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
     }
 
@@ -47,11 +54,31 @@ public class MainActivityFragment extends Fragment {
 
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_poster);
-        gridView.setAdapter(new ImageAdapter(getActivity()));
+        //new FetchMovieTask().execute();
+        mImageAdapter = new ImageAdapter(getActivity());
+        gridView.setAdapter(mImageAdapter);
 
-        new FetchMovieTask().execute();
+
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.moviefragment, menu);
+        //super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh){
+            new FetchMovieTask().execute();
+            return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -62,7 +89,8 @@ public class MainActivityFragment extends Fragment {
         }
 
         public int getCount(){
-            return mThumbIds.length;
+            int numberElements = mThumbIds.length;
+            return numberElements;
         }
 
         public Object getItem(int position){
@@ -73,15 +101,17 @@ public class MainActivityFragment extends Fragment {
             ImageView imageView;
             if (convertView == null){
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(300,300));
+                imageView.setLayoutParams(new GridView.LayoutParams(200,200));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(1,1,1,1);
+                //imageView.setImageResource(mThumbIds[position]);
+                //Picasso.with(getActivity()).load(resultStr[position]).into(imageView);
             }
             else {
                 imageView = (ImageView)convertView;
             }
             //Picasso.with(context).load(resultStr[position].toString()).into(imageView);
-            //Picasso.with(context).load(resultStr[position].toString()).into(imageView);
+
             imageView.setImageResource(mThumbIds[position]);
             return imageView;
 
@@ -92,14 +122,16 @@ public class MainActivityFragment extends Fragment {
         }
 
         private Integer[] mThumbIds = {
-            R.drawable.sample_0, R.drawable.sample_7,
-            R.drawable.sample_1, R.drawable.sample_4,
-            R.drawable.sample_2, R.drawable.sample_6,
-            R.drawable.sample_3, R.drawable.sample_1,
-            R.drawable.sample_4, R.drawable.sample_0,
-            R.drawable.sample_5, R.drawable.sample_3,
-            R.drawable.sample_6, R.drawable.sample_5,
-            R.drawable.sample_7, R.drawable.sample_2,
+                R.drawable.sample_0, R.drawable.sample_7,
+                R.drawable.sample_1, R.drawable.sample_4,
+                R.drawable.sample_2, R.drawable.sample_6,
+                R.drawable.sample_3, R.drawable.sample_1,
+                R.drawable.sample_4, R.drawable.sample_0,
+                R.drawable.sample_5, R.drawable.sample_3,
+                R.drawable.sample_6, R.drawable.sample_5,
+                R.drawable.sample_7, R.drawable.sample_2,
+                R.drawable.sample_0, R.drawable.sample_7,
+                R.drawable.sample_1, R.drawable.sample_4,
         };
 
 
@@ -189,9 +221,5 @@ public class MainActivityFragment extends Fragment {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
     }
 }
