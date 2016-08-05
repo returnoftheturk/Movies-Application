@@ -13,7 +13,9 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+    public String[] resultStr;
 
     public MainActivityFragment() {
     }
@@ -77,6 +80,8 @@ public class MainActivityFragment extends Fragment {
             else {
                 imageView = (ImageView)convertView;
             }
+            //Picasso.with(context).load(resultStr[position].toString()).into(imageView);
+            //Picasso.with(context).load(resultStr[position].toString()).into(imageView);
             imageView.setImageResource(mThumbIds[position]);
             return imageView;
 
@@ -103,10 +108,26 @@ public class MainActivityFragment extends Fragment {
     public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        private String getDataFromJson(String forecastJsonStr) throws JSONException{
 
 
+        private String[] getDataFromJson(String moviesJsonStr) throws JSONException{
+            JSONObject moviesJson = new JSONObject(moviesJsonStr);
+            JSONArray moviesArray = moviesJson.getJSONArray("results");
 
+            int numMovies = moviesArray.length();
+            resultStr = new String[numMovies];
+            String posterPath;
+            final String BASE_URL = "http://image.tmdb.org/t/p/w185";
+
+            for (int i = 0; i <numMovies ; i++) {
+
+                JSONObject movie = moviesArray.getJSONObject(i);
+                posterPath = movie.getString("poster_path");
+                resultStr[i] = BASE_URL + posterPath;
+
+            }
+            Log.v(LOG_TAG, "RESULT STR: " + resultStr);
+            return resultStr;
         }
 
         @Override
@@ -116,7 +137,7 @@ public class MainActivityFragment extends Fragment {
 
             String moviesJsonStr = null;
             try{
-                URL url = new URL("https://api.themoviedb.org/3/movie/550?api_key=891863ba3b17302582171ead3487b06c");
+                URL url = new URL("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=891863ba3b17302582171ead3487b06c");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -156,6 +177,13 @@ public class MainActivityFragment extends Fragment {
                         Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
+
+            }
+            try {
+                getDataFromJson(moviesJsonStr);
+            }
+            catch (JSONException e){
+                Log.v(LOG_TAG, "Error: " + e);
 
             }
             return null;
