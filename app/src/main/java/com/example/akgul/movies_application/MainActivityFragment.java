@@ -28,12 +28,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-    public String[] resultStr;
+    public ArrayList<String> resultStr;
     public ImageAdapter mImageAdapter;
 
     public MainActivityFragment() {
@@ -55,9 +57,36 @@ public class MainActivityFragment extends Fragment {
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_poster);
         //new FetchMovieTask().execute();
+        resultStr = new ArrayList<>(Arrays.asList(
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg",
+                "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"));
+
+
         mImageAdapter = new ImageAdapter(getActivity());
         gridView.setAdapter(mImageAdapter);
-
 
 
         return rootView;
@@ -74,7 +103,10 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh){
+
             new FetchMovieTask().execute();
+
+            mImageAdapter.notifyDataSetChanged();
             return true;
 
         }
@@ -89,7 +121,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         public int getCount(){
-            int numberElements = mThumbIds.length;
+            int numberElements = resultStr.size();
             return numberElements;
         }
 
@@ -101,7 +133,7 @@ public class MainActivityFragment extends Fragment {
             ImageView imageView;
             if (convertView == null){
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(200,200));
+                imageView.setLayoutParams(new GridView.LayoutParams(300,300));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(1,1,1,1);
                 //imageView.setImageResource(mThumbIds[position]);
@@ -110,9 +142,9 @@ public class MainActivityFragment extends Fragment {
             else {
                 imageView = (ImageView)convertView;
             }
-            //Picasso.with(context).load(resultStr[position].toString()).into(imageView);
+            Picasso.with(getActivity()).load(resultStr.get(position).toString()).into(imageView);
 
-            imageView.setImageResource(mThumbIds[position]);
+
             return imageView;
 
         }
@@ -121,45 +153,30 @@ public class MainActivityFragment extends Fragment {
             return position;
         }
 
-        private Integer[] mThumbIds = {
-                R.drawable.sample_0, R.drawable.sample_7,
-                R.drawable.sample_1, R.drawable.sample_4,
-                R.drawable.sample_2, R.drawable.sample_6,
-                R.drawable.sample_3, R.drawable.sample_1,
-                R.drawable.sample_4, R.drawable.sample_0,
-                R.drawable.sample_5, R.drawable.sample_3,
-                R.drawable.sample_6, R.drawable.sample_5,
-                R.drawable.sample_7, R.drawable.sample_2,
-                R.drawable.sample_0, R.drawable.sample_7,
-                R.drawable.sample_1, R.drawable.sample_4,
-        };
-
-
     }
 
     public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-
-
-        private String[] getDataFromJson(String moviesJsonStr) throws JSONException{
+        private void getDataFromJson(String moviesJsonStr) throws JSONException{
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             JSONArray moviesArray = moviesJson.getJSONArray("results");
 
             int numMovies = moviesArray.length();
-            resultStr = new String[numMovies];
+            //resultStr = new String[numMovies];
             String posterPath;
+            resultStr.clear();
             final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
             for (int i = 0; i <numMovies ; i++) {
 
                 JSONObject movie = moviesArray.getJSONObject(i);
                 posterPath = movie.getString("poster_path");
-                resultStr[i] = BASE_URL + posterPath;
+                resultStr.add(i, BASE_URL + posterPath);
 
             }
             Log.v(LOG_TAG, "RESULT STR: " + resultStr);
-            return resultStr;
+
         }
 
         @Override
