@@ -13,6 +13,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,6 +103,12 @@ public class MainActivityFragment extends Fragment {
     public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
+        private String getDataFromJson(String forecastJsonStr) throws JSONException{
+
+
+
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             HttpURLConnection urlConnection = null;
@@ -129,6 +137,7 @@ public class MainActivityFragment extends Fragment {
                     return null;
                 }
                 moviesJsonStr = buffer.toString();
+                Log.v(LOG_TAG, moviesJsonStr);
 
             }
             catch (IOException e){
