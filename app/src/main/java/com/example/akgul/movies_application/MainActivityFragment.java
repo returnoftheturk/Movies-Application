@@ -53,6 +53,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final String LOG_TAG = "onCreateView";
 
         View rootView = inflater.inflate(R. layout.fragment_main, container, false);
 
@@ -61,12 +62,21 @@ public class MainActivityFragment extends Fragment {
 
         mImageAdapter = new ImageAdapter(getActivity());
         gridView.setAdapter(mImageAdapter);
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getActivity(), "" + i, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getActivity(), "" + i, Toast.LENGTH_SHORT).show();
+                String[] movieData = mImageAdapter.getData(i);
+                Toast.makeText(getActivity(), "" + movieData[0], Toast.LENGTH_SHORT).show();
+
+
+
             }
         });
+//        String[] testing = new String[5];
+//        testing = mImageAdapter.getData(0);
+//        Log.v("Show if works", "Hello:  " + testing);
 
 
         return rootView;
@@ -103,15 +113,26 @@ public class MainActivityFragment extends Fragment {
 
     public class ImageAdapter extends BaseAdapter {
         private Context mContext;
-        private String[] myData;
+        private ArrayList<String> myData = new ArrayList<>();
+        private String[] returnData = new String[5];
 
         public ImageAdapter(Context c){
             mContext = c;
         }
 
-        public void populateData(String[] movieData){
-            myData = movieData;
+        public void populateData(String movieData){
+//            for (int i = 0; i <movieData.length ; i++) {
+//                myData.add(i, movieData[i]);
+//            }
+                myData.add(movieData);
+        }
 
+        public String[] getData(int position){
+            for (int i = 0; i<5; i++){
+                returnData[i] = myData.get(position*5+i).toString();
+
+            }
+            return returnData;
         }
 
         public int getCount(){
@@ -160,17 +181,30 @@ public class MainActivityFragment extends Fragment {
             String[] newResults = new String[numMovies];
             //resultStr = new String[numMovies];
             String posterPath;
-            //resultStr.clear();
+
             final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
             for (int i = 0; i <numMovies ; i++) {
 
                 JSONObject movie = moviesArray.getJSONObject(i);
+                mImageAdapter.populateData(movie.getString("original_title"));
+                mImageAdapter.populateData(movie.getString("overview"));
+                mImageAdapter.populateData(movie.getString("release_date"));
+                mImageAdapter.populateData(movie.getString("vote_average"));
+                mImageAdapter.populateData(movie.getString("poster_path"));
+
                 posterPath = movie.getString("poster_path");
                 //resultStr.add(i, BASE_URL + posterPath);
                 newResults[i]= BASE_URL + posterPath;
             }
             Log.v(LOG_TAG, "RESULT STR: " + resultStr);
+            String[] testing = new String[5];
+            testing = mImageAdapter.getData(6);
+            Log.v(LOG_TAG, testing[0].toString());
+            Log.v(LOG_TAG, testing[1].toString());
+            Log.v(LOG_TAG, testing[2].toString());
+            Log.v(LOG_TAG, testing[3].toString());
+            Log.v(LOG_TAG, testing[4].toString());
             return newResults;
 
         }
