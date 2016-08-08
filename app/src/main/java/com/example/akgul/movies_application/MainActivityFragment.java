@@ -98,19 +98,29 @@ public class MainActivityFragment extends Fragment {
         //super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private void updatePosters(){
+        FetchMovieTask fetchMovieTask = new FetchMovieTask();
+        fetchMovieTask.execute();
+
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh){
-
-            new FetchMovieTask().execute();
-
-            mImageAdapter.notifyDataSetChanged();
+            updatePosters();
             return true;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updatePosters();
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -155,32 +165,34 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void>{
+    public class FetchMovieTask extends AsyncTask<Void, Void, String[]>{
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        private void getDataFromJson(String moviesJsonStr) throws JSONException{
+        private String[] getDataFromJson(String moviesJsonStr) throws JSONException{
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             JSONArray moviesArray = moviesJson.getJSONArray("results");
 
             int numMovies = moviesArray.length();
+            String[] newResults = new String[numMovies];
             //resultStr = new String[numMovies];
             String posterPath;
-            resultStr.clear();
+            //resultStr.clear();
             final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
             for (int i = 0; i <numMovies ; i++) {
 
                 JSONObject movie = moviesArray.getJSONObject(i);
                 posterPath = movie.getString("poster_path");
-                resultStr.add(i, BASE_URL + posterPath);
-
+                //resultStr.add(i, BASE_URL + posterPath);
+                newResults[i]= BASE_URL + posterPath;
             }
             Log.v(LOG_TAG, "RESULT STR: " + resultStr);
+            return newResults;
 
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected String[] doInBackground(Void... voids) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -229,7 +241,7 @@ public class MainActivityFragment extends Fragment {
 
             }
             try {
-                getDataFromJson(moviesJsonStr);
+                return getDataFromJson(moviesJsonStr);
             }
             catch (JSONException e){
                 Log.v(LOG_TAG, "Error: " + e);
@@ -238,5 +250,17 @@ public class MainActivityFragment extends Fragment {
             return null;
         }
 
+        @Override
+        protected void onPostExecute(String[] strings) {
+            //super.onPostExecute(strings);
+            if (strings!=null){
+                resultStr.clear();
+                for (int i = 0; i<strings.length; i++){
+                    resultStr.add(i, strings[i]);
+
+                }
+                mImageAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }
