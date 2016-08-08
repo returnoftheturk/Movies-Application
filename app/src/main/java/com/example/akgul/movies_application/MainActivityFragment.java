@@ -53,12 +53,12 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
+
         View rootView = inflater.inflate(R. layout.fragment_main, container, false);
 
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_poster);
-      
+
         mImageAdapter = new ImageAdapter(getActivity());
         gridView.setAdapter(mImageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,14 +75,12 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.moviefragment, menu);
-        //super.onCreateOptionsMenu(menu, inflater);
+
     }
 
     private void updatePosters(){
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
         fetchMovieTask.execute();
-
-
     }
 
     @Override
@@ -105,9 +103,15 @@ public class MainActivityFragment extends Fragment {
 
     public class ImageAdapter extends BaseAdapter {
         private Context mContext;
+        private String[] myData;
 
         public ImageAdapter(Context c){
             mContext = c;
+        }
+
+        public void populateData(String[] movieData){
+            myData = movieData;
+
         }
 
         public int getCount(){
