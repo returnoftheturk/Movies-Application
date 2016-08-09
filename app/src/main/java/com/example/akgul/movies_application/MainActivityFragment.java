@@ -2,8 +2,11 @@ package com.example.akgul.movies_application;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -103,7 +106,10 @@ public class MainActivityFragment extends Fragment {
 
     private void updatePosters(){
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
-        fetchMovieTask.execute();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortType = null;
+        sortType = sharedPreferences.getString("order", "popularity.desc");
+        fetchMovieTask.execute(sortType);
     }
 
     @Override
@@ -183,7 +189,7 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, String[]>{
+    public class FetchMovieTask extends AsyncTask<String, Void, String[]>{
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         private String[] getDataFromJson(String moviesJsonStr) throws JSONException{
@@ -223,13 +229,24 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected String[] doInBackground(Void... voids) {
+        protected String[] doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
             String moviesJsonStr = null;
             try{
-                URL url = new URL("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=891863ba3b17302582171ead3487b06c");
+                final String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
+                final String QUERY_PARAM = "sort_by";
+                final String APPIP_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(APPIP_PARAM, "891863ba3b17302582171ead3487b06c")
+                        .build();
+
+                URL url = new URL (builtUri.toString());
+
+                //URL url = new URL("https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=891863ba3b17302582171ead3487b06c");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -251,6 +268,7 @@ public class MainActivityFragment extends Fragment {
                 }
                 moviesJsonStr = buffer.toString();
                 Log.v(LOG_TAG, moviesJsonStr);
+                Log.v(LOG_TAG, params[0]);
 
             }
             catch (IOException e){
