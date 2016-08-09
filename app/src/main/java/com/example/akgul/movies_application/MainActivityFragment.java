@@ -241,7 +241,7 @@ public class MainActivityFragment extends Fragment {
 
                 Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
-                        .appendQueryParameter(APPIP_PARAM, "891863ba3b17302582171ead3487b06c")
+                        .appendQueryParameter(APPIP_PARAM, BuildConfig.OPEN_MOVIE_DATABASE_API_KEY)
                         .build();
 
                 URL url = new URL (builtUri.toString());
