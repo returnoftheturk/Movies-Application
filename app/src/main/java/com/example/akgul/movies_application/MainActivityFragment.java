@@ -58,6 +58,11 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
 
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        updatePosters();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,10 +95,6 @@ public class MainActivityFragment extends Fragment {
 
             }
         });
-//        String[] testing = new String[5];
-//        testing = mImageAdapter.getData(0);
-//        Log.v("Show if works", "Hello:  " + testing);
-
 
         return rootView;
     }
@@ -107,8 +108,7 @@ public class MainActivityFragment extends Fragment {
     private void updatePosters(){
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortType = null;
-        sortType = sharedPreferences.getString("order", "popularity.desc");
+        String sortType = sharedPreferences.getString("order", "popularity.desc");
         fetchMovieTask.execute(sortType);
     }
 
@@ -124,11 +124,7 @@ public class MainActivityFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updatePosters();
-    }
+
 
     public class ImageAdapter extends BaseAdapter {
         private Context mContext;
@@ -139,10 +135,12 @@ public class MainActivityFragment extends Fragment {
             mContext = c;
         }
 
+        public void clearMyData(){
+            myData.clear();
+
+        }
+
         public void populateData(String movieData){
-//            for (int i = 0; i <movieData.length ; i++) {
-//                myData.add(i, movieData[i]);
-//            }
                 myData.add(movieData);
         }
 
@@ -226,6 +224,12 @@ public class MainActivityFragment extends Fragment {
             Log.v(LOG_TAG, testing[4].toString());
             return newResults;
 
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mImageAdapter.clearMyData();
         }
 
         @Override
