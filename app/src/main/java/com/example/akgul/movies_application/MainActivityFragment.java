@@ -1,6 +1,7 @@
 package com.example.akgul.movies_application;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,6 +40,11 @@ import java.util.Arrays;
 public class MainActivityFragment extends Fragment {
     public ArrayList<String> resultStr = new ArrayList<>();
     public ImageAdapter mImageAdapter;
+    final String ORIGINAL_TITLE = "original_title";
+    final String PLOT_SYNOPSIS = "overview";
+    final String RELEASE_DATE = "release_date";
+    final String USER_RATING = "vote_average";
+    final String POSTER_PATH = "poster_path";
 
     public MainActivityFragment() {
     }
@@ -68,6 +74,13 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                // Toast.makeText(getActivity(), "" + i, Toast.LENGTH_SHORT).show();
                 String[] movieData = mImageAdapter.getData(i);
+                Intent intent = new Intent(getActivity(),DetailActivity.class );
+                intent.putExtra(ORIGINAL_TITLE, movieData[0])
+                        .putExtra(PLOT_SYNOPSIS, movieData[1])
+                        .putExtra(RELEASE_DATE, movieData[2])
+                        .putExtra(USER_RATING, movieData[3])
+                        .putExtra(POSTER_PATH, resultStr.get(i));
+                startActivity(intent);
                 Toast.makeText(getActivity(), "" + movieData[0], Toast.LENGTH_SHORT).show();
 
 
@@ -187,11 +200,11 @@ public class MainActivityFragment extends Fragment {
             for (int i = 0; i <numMovies ; i++) {
 
                 JSONObject movie = moviesArray.getJSONObject(i);
-                mImageAdapter.populateData(movie.getString("original_title"));
-                mImageAdapter.populateData(movie.getString("overview"));
-                mImageAdapter.populateData(movie.getString("release_date"));
-                mImageAdapter.populateData(movie.getString("vote_average"));
-                mImageAdapter.populateData(movie.getString("poster_path"));
+                mImageAdapter.populateData(movie.getString(ORIGINAL_TITLE));
+                mImageAdapter.populateData(movie.getString(PLOT_SYNOPSIS));
+                mImageAdapter.populateData(movie.getString(RELEASE_DATE));
+                mImageAdapter.populateData(movie.getString(USER_RATING));
+                mImageAdapter.populateData(movie.getString(POSTER_PATH));
 
                 posterPath = movie.getString("poster_path");
                 //resultStr.add(i, BASE_URL + posterPath);
