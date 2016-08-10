@@ -80,7 +80,6 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               // Toast.makeText(getActivity(), "" + i, Toast.LENGTH_SHORT).show();
                 String[] movieData = mImageAdapter.getData(i);
                 Intent intent = new Intent(getActivity(),DetailActivity.class );
                 intent.putExtra(ORIGINAL_TITLE, movieData[0])
@@ -89,10 +88,6 @@ public class MainActivityFragment extends Fragment {
                         .putExtra(USER_RATING, movieData[3])
                         .putExtra(POSTER_PATH, resultStr.get(i));
                 startActivity(intent);
-                Toast.makeText(getActivity(), "" + movieData[0], Toast.LENGTH_SHORT).show();
-
-
-
             }
         });
 
@@ -168,14 +163,11 @@ public class MainActivityFragment extends Fragment {
                 imageView.setLayoutParams(new GridView.LayoutParams(300,300));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(1,1,1,1);
-                //imageView.setImageResource(mThumbIds[position]);
-                //Picasso.with(getActivity()).load(resultStr[position]).into(imageView);
-            }
+                }
             else {
                 imageView = (ImageView)convertView;
             }
             Picasso.with(getActivity()).load(resultStr.get(position).toString()).into(imageView);
-
 
             return imageView;
 
@@ -196,7 +188,7 @@ public class MainActivityFragment extends Fragment {
 
             int numMovies = moviesArray.length();
             String[] newResults = new String[numMovies];
-            //resultStr = new String[numMovies];
+
             String posterPath;
 
             final String BASE_URL = "http://image.tmdb.org/t/p/w185";
@@ -214,14 +206,7 @@ public class MainActivityFragment extends Fragment {
                 //resultStr.add(i, BASE_URL + posterPath);
                 newResults[i]= BASE_URL + posterPath;
             }
-            Log.v(LOG_TAG, "RESULT STR: " + resultStr);
-            String[] testing = new String[5];
-            testing = mImageAdapter.getData(6);
-            Log.v(LOG_TAG, testing[0].toString());
-            Log.v(LOG_TAG, testing[1].toString());
-            Log.v(LOG_TAG, testing[2].toString());
-            Log.v(LOG_TAG, testing[3].toString());
-            Log.v(LOG_TAG, testing[4].toString());
+
             return newResults;
 
         }
@@ -232,12 +217,14 @@ public class MainActivityFragment extends Fragment {
             mImageAdapter.clearMyData();
         }
 
+
         @Override
         protected String[] doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
             String moviesJsonStr = null;
+
             try{
                 final String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
                 final String QUERY_PARAM = "sort_by";
@@ -271,8 +258,6 @@ public class MainActivityFragment extends Fragment {
                     return null;
                 }
                 moviesJsonStr = buffer.toString();
-                Log.v(LOG_TAG, moviesJsonStr);
-                Log.v(LOG_TAG, params[0]);
 
             }
             catch (IOException e){
@@ -293,6 +278,7 @@ public class MainActivityFragment extends Fragment {
                 }
 
             }
+
             try {
                 return getDataFromJson(moviesJsonStr);
             }
@@ -301,6 +287,7 @@ public class MainActivityFragment extends Fragment {
 
             }
             return null;
+            //} else return null;
         }
 
         @Override
